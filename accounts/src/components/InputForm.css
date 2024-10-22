@@ -1,0 +1,22 @@
+
+.inputForm{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5vmax;
+}
+.inputForm > div{
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid grey;
+    padding: 2.5vmax 1vmax;
+    border-radius: 10px;
+}
+.inputForm > div input{
+    max-width: 100%;
+}
+.inputForm > div Button{
+    width: 80%;
+}
