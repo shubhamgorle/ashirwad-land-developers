@@ -1,4 +1,4 @@
-import { NEW_DATA_SUCCESS, NEW_DATA_FAIL, NEW_DATA_REQUEST, GET_DATA_REQUEST, GET_DATA_SUCCESS, GET_DATA_FAIL } from "./newDataActionTypes";
+import { NEW_DATA_SUCCESS, NEW_DATA_FAIL, NEW_DATA_REQUEST, GET_DATA_REQUEST, GET_DATA_SUCCESS, GET_DATA_FAIL, DELETE_DATA_REQUEST, DELETE_DATA_SUCCESS, DELETE_DATA_FAIL, UPDATE_DATA_REQUEST, UPDATE_DATA_SUCCESS, UPDATE_DATA_FAIL } from "./newDataActionTypes";
 import axios from 'axios'
 export const createNewData = (formData) => async (dispatch, getState) => {
     try {
@@ -32,6 +32,41 @@ export const getAllData = () => async (dispatch, getState) => {
         dispatch({
             type: GET_DATA_FAIL,
             payload: error
+        })
+    }
+}
+
+export const deleteData = (id) => async (dispatch, getState) => {
+    try {
+        dispatch({ type: DELETE_DATA_REQUEST })
+        let { data } = await axios.delete(`/ashirwad/mendhepathar/remove/${id}`);
+        dispatch({
+            type: DELETE_DATA_SUCCESS,
+            payload: data.success
+        })
+    } catch (error) {
+        dispatch({
+            type: DELETE_DATA_FAIL,
+            payload: false
+        })
+    }
+}
+
+export const UpdateData = (id, updatedData) => async (dispatch) => {
+    const config = {
+        headers: { "Content-Type": "application/json" }
+    }
+    try {
+        dispatch({ type: UPDATE_DATA_REQUEST })
+        let { data } = await axios.put(`/ashirwad/mendhepathar/update/${id}`, updatedData, config);
+        dispatch({
+            type: UPDATE_DATA_SUCCESS,
+            payload: data.success
+        })
+    } catch (error) {
+        dispatch({
+            type: UPDATE_DATA_FAIL,
+            payload: false
         })
     }
 }

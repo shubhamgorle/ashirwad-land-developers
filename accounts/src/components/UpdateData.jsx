@@ -9,11 +9,13 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import { useDispatch, useSelector } from 'react-redux';
-import { createNewData } from '../redux/newDataActions';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { UpdateData } from '../redux/newDataActions';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-export default function InputForm() {
+import { UPDATE_DATA_RESET } from '../redux/newDataActionTypes';
+export default function UpdateForm() {
   const [account, setAccount] = React.useState("");
   const [account1, setAccount1] = React.useState("");
   const [name, setName] = React.useState("");
@@ -22,7 +24,8 @@ export default function InputForm() {
   const [mode, setMode] = React.useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const {success} = useSelector((state)=>state.newData)
+  const {id} = useParams();
+  const {isUpdated} = useSelector((state)=>state.deleteData);
   const handleAccount = (e) => {
     setAccount(e.target.value)
   }
@@ -30,7 +33,7 @@ export default function InputForm() {
     e.preventDefault();
     if (!account || !name || !description || !money || !mode) {
       alert("Please fill out all required fields !")
-      return
+      return;
     }
     const myform = new FormData();
     myform.set("account", account === 'other' ? account1 : account);
@@ -40,14 +43,15 @@ export default function InputForm() {
     myform.set("mode", mode);
     const currentDate = new Date().toLocaleDateString('en-GB');
     myform.set("date", currentDate);
-    dispatch(createNewData(myform))
+    dispatch(UpdateData(id, myform))
   }
   useEffect(()=>{
-    if(success){
-      alert("Data Added Succesfully");
-      navigate("/show/mendhepathar")
-    }
-  },[navigate, success])
+     if(isUpdated){
+        alert("Data Updated Succesfully");
+        dispatch({type:UPDATE_DATA_RESET})
+        navigate("/show/mendhepathar")
+     }
+  },[isUpdated, navigate, dispatch])
   return (
     <Box
       component="form"
@@ -129,7 +133,7 @@ export default function InputForm() {
           value={money}
           onChange={(e) => setMoney(e.target.value)}
         />
-        <Button variant="outlined" onClick={HandleSubmit}>Submit</Button>
+        <Button variant="outlined" onClick={HandleSubmit}>Update</Button>
       </div>
     </Box>
   );
