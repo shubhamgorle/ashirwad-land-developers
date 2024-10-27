@@ -1,4 +1,5 @@
-import React,{Fragment} from 'react'
+import React,{Fragment, useState} from 'react';
+import "./showData.css"
 import { useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
@@ -10,32 +11,72 @@ import { deleteData } from '../redux/newDataActions'
 import { DELETE_DATA_RESET } from '../redux/newDataActionTypes'
 import DeleteIcon from "@mui/icons-material/Delete"
 import EditIcon from "@mui/icons-material/Edit"
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 const ShowData = () => {
     const dispatch = useDispatch();
     const {AllData} = useSelector((state)=>state.getAllData);
     const {isDeleted} = useSelector((state)=>state.deleteData);
-    
-    const handleDelete = (id) =>{
+    const [id, setId] = useState()
+    const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = (id) => {
+    setId(id)
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+    const handleDelete = () =>{
         dispatch(deleteData(id))
+        setOpen(false);
     }
     const columns = [
-        { field: 'srno', headerName: 'Sr. No', minWidth: 30 , },
-        { field: 'account', headerName: 'Account', minWidth: 50 , },
-        { field: 'name', headerName: 'Name', minWidth: 120, cellClassName: (params)=>{
-            return (params.row.status === "Delivered" ? "greenColor" : "redColor")
-        } },
-        { field: 'description', headerName: 'Description', minWidth: 300,  type:"number"},
-        { field: 'money', headerName: 'Money', minWidth: 150, type:"number"},
-        { field: 'mode', headerName: 'Mode', minWidth: 120, type:"number"},
-        { field: 'date', headerName: 'Date', minWidth: 120,  type:"number"},
-        { field: 'totalIncome', headerName: 'Total Income', minWidth: 120,  type:"number"},
-        { field: 'amtbalance', headerName: 'balance', minWidth: 120,  type:"number"},
+        { field: 'srno', headerName: 'Sr. No', minWidth: 30  },
+        { field: 'account', headerName: 'Account', minWidth: 50 ,sortable:false,  cellClassName: (params)=>{
+          if(params.row.id === 'total'){
+          return "boldColor"
+          }
+          else{
+          return (params.row.account === "divident" ? "blueColor" : "");
+          }
+      }},
+        { field: 'name', headerName: 'Name', minWidth: 120, sortable:false},
+        { field: 'description', headerName: 'Description', minWidth: 300, sortable:false,  type:"number"},
+        { field: 'money', headerName: 'Expenses', minWidth: 150, type:"number",sortable:false, cellClassName: (params)=>{
+          if(params.row.id !== 'total'){
+          return (params.row.account !== "income" ? "redColor" : "");
+          }
+          else{
+            return "boldColor"
+          }
+      } },
+        { field: 'mode', headerName: 'Mode', minWidth: 120, type:"number", sortable:false},
+        { field: 'date', headerName: 'Date', minWidth: 120,  type:"number", sortable:false},
+        { field: 'totalIncome', headerName: 'Income', minWidth: 120,  type:"number",sortable:false, cellClassName: (params)=>{
+          if(params.row.id !== 'total'){
+          return (params.row.account === "income" ? "greenColor" : "");
+          }
+          else{
+            return "boldColor"
+          }
+      } },
+        { field: 'amtbalance', headerName: 'balance', minWidth: 120,  type:"number",sortable:false, cellClassName: (params)=>{
+          if(params.row.id === 'total'){
+          return (amitBalance-totalMoney > 0 ? "greenColor" : "redColor");
+          }
+      } },
         {field:"actions", headerName:"Actions", minWidth:150, flex:0.3, type:"number", sortable:false, renderCell:(params)=>{
           if(params.row.id !== 'total'){
             return(
               <>
               <Link to={`/update/mendhepathar/${params.row.id}`}><EditIcon/></Link>
-              <Button onClick={()=>handleDelete(params.row.id)}><DeleteIcon/></Button>
+              <Button onClick={()=>handleClickOpen(params.row.id)}><DeleteIcon/></Button>
+              {/* <Button onClick={()=>handleDelete(params.row.id)}><DeleteIcon/></Button> */}
               </>
           )
           }
@@ -58,7 +99,7 @@ const ShowData = () => {
         account:item.account,
         name : item.name,
         description:item.description,
-        money:item.money,
+        money:item.account !== 'income' ? item.money : 0,
         mode:item.mode,
         date:item.date,
         totalIncome:item.account === 'income' ? item.money : 0,
@@ -85,7 +126,7 @@ const ShowData = () => {
          dispatch(getAllData())
     },[dispatch, isDeleted])
   return (
-    <div>
+    <div className='showdataContainer'>
        <DataGrid
                 rows={rows}
                 columns={columns}
@@ -98,6 +139,33 @@ const ShowData = () => {
                   }}
                   pageSizeOptions={[8]} 
                 />
+
+<React.Fragment>
+      {/* <Button variant="outlined" onClick={handleClickOpen}>
+        Open alert dialog
+      </Button> */}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Warning"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Do you Really want to delete this data
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>No</Button>
+          <Button onClick={handleDelete} autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
 
     </div>
   )

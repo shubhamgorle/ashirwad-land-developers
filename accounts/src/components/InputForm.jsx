@@ -56,6 +56,7 @@ export default function InputForm() {
       autoComplete="off"
       className='inputForm'
     >
+      
       <div>
         <Box sx={{
           // margin: { xs: 1, sm: 2, md: 3 },  // responsive margins
@@ -63,6 +64,7 @@ export default function InputForm() {
 
         }}>
           <FormControl >
+            <h3>M-ADD</h3>
             <FormLabel id="demo-row-radio-buttons-group-label">A/c</FormLabel>
             <RadioGroup
               row
@@ -102,7 +104,7 @@ export default function InputForm() {
           label="Description"
           type='text'
           multiline
-          rows={4}
+          rows={2}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />

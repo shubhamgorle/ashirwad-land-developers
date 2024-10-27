@@ -1,11 +1,12 @@
-import { deleteDataReducer, getAllDataReducer, newDataReducer } from "./newDataReducer";
+import { deleteDataReducer, detailsDataReducer, getAllDataReducer, newDataReducer } from "./newDataReducer";
 import {legacy_createStore as createStore, combineReducers, applyMiddleware } from 'redux';
 import {thunk} from 'redux-thunk';
 import {composeWithDevTools} from 'redux-devtools-extension'
 const reducer = combineReducers({
     newData : newDataReducer,
     getAllData : getAllDataReducer,
-    deleteData : deleteDataReducer
+    deleteData : deleteDataReducer,
+    getDetails : detailsDataReducer
 })
 const middleware = [thunk];
 

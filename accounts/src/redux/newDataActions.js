@@ -1,4 +1,4 @@
-import { NEW_DATA_SUCCESS, NEW_DATA_FAIL, NEW_DATA_REQUEST, GET_DATA_REQUEST, GET_DATA_SUCCESS, GET_DATA_FAIL, DELETE_DATA_REQUEST, DELETE_DATA_SUCCESS, DELETE_DATA_FAIL, UPDATE_DATA_REQUEST, UPDATE_DATA_SUCCESS, UPDATE_DATA_FAIL } from "./newDataActionTypes";
+import { NEW_DATA_SUCCESS, NEW_DATA_FAIL, NEW_DATA_REQUEST, GET_DATA_REQUEST, GET_DATA_SUCCESS, GET_DATA_FAIL, DELETE_DATA_REQUEST, DELETE_DATA_SUCCESS, DELETE_DATA_FAIL, UPDATE_DATA_REQUEST, UPDATE_DATA_SUCCESS, UPDATE_DATA_FAIL, DETAILS_DATA_REQUEST, DETAILS_DATA_SUCCESS, DETAILS_DATA_FAIL } from "./newDataActionTypes";
 import axios from 'axios'
 export const createNewData = (formData) => async (dispatch, getState) => {
     try {
@@ -70,3 +70,22 @@ export const UpdateData = (id, updatedData) => async (dispatch) => {
         })
     }
 }
+export const getDetails = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: DETAILS_DATA_REQUEST })
+        let { data } = await axios.get(`/ashirwad/mendhepathar/details/${id}`);
+       
+        dispatch({
+            type: DETAILS_DATA_SUCCESS,
+            payload: data.data
+        })
+        console.log(data.data)
+    } catch (error) {
+        dispatch({
+            type: DETAILS_DATA_FAIL,
+            payload: error
+        })
+    }
+}
+
+// /ashirwad/mendhepathar/details/671791775a25a503986371d8

@@ -13,19 +13,27 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { UpdateData } from '../redux/newDataActions';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { UPDATE_DATA_RESET } from '../redux/newDataActionTypes';
+import { getDetails } from '../redux/newDataActions';
 export default function UpdateForm() {
-  const [account, setAccount] = React.useState("");
-  const [account1, setAccount1] = React.useState("");
-  const [name, setName] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [money, setMoney] = React.useState(0);
-  const [mode, setMode] = React.useState("");
+  // get data from redux store
+  const { isUpdated } = useSelector((state) => state.deleteData);
+  const { details } = useSelector((state) => state.getDetails);
+
+  // all states
+  const [account, setAccount] = useState();
+  const [account1, setAccount1] = useState();
+  const [name, setName] = useState();
+  const [description, setDescription] = useState();
+  const [money, setMoney] = useState();
+  const [mode, setMode] = useState();
+
+  // all hooks
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const {id} = useParams();
-  const {isUpdated} = useSelector((state)=>state.deleteData);
+  const { id } = useParams();
+
   const handleAccount = (e) => {
     setAccount(e.target.value)
   }
@@ -36,7 +44,7 @@ export default function UpdateForm() {
       return;
     }
     const myform = new FormData();
-    myform.set("account", account === 'other' ? account1 : account);
+    myform.set("account", account !== 'divident' &&  account !== 'officeExpenses' && account !== 'income' ? account1 : account);
     myform.set("name", name);
     myform.set("description", description.trim());
     myform.set("money", money);
@@ -45,13 +53,24 @@ export default function UpdateForm() {
     myform.set("date", currentDate);
     dispatch(UpdateData(id, myform))
   }
-  useEffect(()=>{
-     if(isUpdated){
-        alert("Data Updated Succesfully");
-        dispatch({type:UPDATE_DATA_RESET})
-        navigate("/show/mendhepathar")
-     }
-  },[isUpdated, navigate, dispatch])
+  useEffect(() => {
+    if (isUpdated) {
+      alert("Data Updated Succesfully");
+      dispatch({ type: UPDATE_DATA_RESET })
+      navigate("/show/mendhepathar")
+    }
+    if (details && details._id !== id) {
+      dispatch(getDetails(id))
+    } else {
+      setAccount(details.account)
+      setAccount1(details.account)
+      setName(details.name)
+      setDescription(details.description)
+      setMoney(details.money)
+      setMode(details.mode)
+    }
+
+  }, [isUpdated, navigate, dispatch, id, details])
   return (
     <Box
       component="form"
@@ -67,6 +86,7 @@ export default function UpdateForm() {
 
         }}>
           <FormControl >
+          <h3>Update</h3>
             <FormLabel id="demo-row-radio-buttons-group-label">A/c</FormLabel>
             <RadioGroup
               row
@@ -77,15 +97,17 @@ export default function UpdateForm() {
               <FormControlLabel value="divident" control={<Radio />} checked={account === 'divident'} label="Divident" onChange={handleAccount} />
               <FormControlLabel value="officeExpenses" control={<Radio />} checked={account === 'officeExpenses'} label="Office Expenses" onChange={handleAccount} />
               <FormControlLabel value="income" control={<Radio />} checked={account === 'income'} label="income" onChange={handleAccount} />
-              <FormControlLabel value="other" control={<Radio />} label="Other" checked={account === 'other'} onChange={handleAccount} />
+              <FormControlLabel value="other" control={<Radio />} label="Other" checked={account !== 'divident' &&  account !== 'officeExpenses' && account !== 'income'} onChange={handleAccount} />
             </RadioGroup>
           </FormControl>
         </Box>
         <TextField
-          style={{ display: account === 'other' ? 'block' : 'none' }}
+          style={{ display: account !== 'divident' &&  account !== 'officeExpenses' && account !== 'income' ? 'block' : 'none' }}
           id="account"
-          label="A/c"
+          // label="A/c"
+          placeholder='A/c'
           type='text'
+          value={account1}
           onChange={(e) => { setAccount1(e.target.value) }}
         />
 
@@ -98,12 +120,12 @@ export default function UpdateForm() {
           onChange={(e) => { setName(e.target.value) }}
         >
           <MenuItem value="amit">Amit</MenuItem>
-          {/* <MenuItem value="rupesh">Rupesh</MenuItem> */}
         </TextField>
 
         <TextField
           required
-          label="Description"
+          // label="Description"
+          placeholder='Description'
           type='text'
           multiline
           rows={4}
@@ -128,7 +150,8 @@ export default function UpdateForm() {
           id="outlined-number"
           required
           type="number"
-          label="Rs"
+          // label="Rs"
+          placeholder='Money'
           variant="outlined"
           value={money}
           onChange={(e) => setMoney(e.target.value)}
