@@ -3,26 +3,37 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
-import "./InputForm.css"
+import "./RinputForm.css"
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import { useDispatch, useSelector } from 'react-redux';
-import { createNewData } from '../redux/newDataActions';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-export default function InputForm() {
-  const [account, setAccount] = React.useState("");
-  const [account1, setAccount1] = React.useState("");
-  const [name, setName] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [money, setMoney] = React.useState(0);
-  const [mode, setMode] = React.useState("");
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { UpdateData } from '../redux/rDataActions';
+import { useEffect, useState } from 'react';
+import { R_UPDATE_DATA_RESET } from '../redux/rDataActionTypes';
+import { getDetails } from '../redux/rDataActions';
+export default function UpdateForm() {
+  // get data from redux store
+  const { isUpdated } = useSelector((state) => state.rdeleteData);
+  const { details } = useSelector((state) => state.rgetDetails);
+
+  // all states
+  const [account, setAccount] = useState();
+  const [account1, setAccount1] = useState();
+  const [name, setName] = useState();
+  const [description, setDescription] = useState();
+  const [money, setMoney] = useState();
+  const [mode, setMode] = useState();
+
+  // all hooks
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const {success} = useSelector((state)=>state.newData)
+  const { id } = useParams();
+
   const handleAccount = (e) => {
     setAccount(e.target.value)
   }
@@ -30,24 +41,36 @@ export default function InputForm() {
     e.preventDefault();
     if (!account || !name || !description || !money || !mode) {
       alert("Please fill out all required fields !")
-      return
+      return;
     }
     const myform = new FormData();
-    myform.set("account", account === 'other' ? account1 : account);
+    myform.set("account", account !== 'divident' &&  account !== 'officeExpenses' && account !== 'income' ? account1 : account);
     myform.set("name", name);
     myform.set("description", description.trim());
     myform.set("money", money);
     myform.set("mode", mode);
     const currentDate = new Date().toLocaleDateString('en-GB');
     myform.set("date", currentDate);
-    dispatch(createNewData(myform))
+    dispatch(UpdateData(id, myform))
   }
-  useEffect(()=>{
-    if(success){
-      alert("Data Added Succesfully");
-      navigate("/show/mendhepathar")
+  useEffect(() => {
+    if (isUpdated) {
+      alert("Data Updated Succesfully");
+      dispatch({ type: R_UPDATE_DATA_RESET })
+      navigate("/show/raulgaon")
     }
-  },[navigate, success])
+    if (details && details._id !== id) {
+      dispatch(getDetails(id))
+    } else {
+      setAccount(details.account)
+      setAccount1(details.account)
+      setName(details.name)
+      setDescription(details.description)
+      setMoney(details.money)
+      setMode(details.mode)
+    }
+
+  }, [isUpdated, navigate, dispatch, id, details])
   return (
     <Box
       component="form"
@@ -56,7 +79,6 @@ export default function InputForm() {
       autoComplete="off"
       className='inputForm'
     >
-      
       <div>
         <Box sx={{
           // margin: { xs: 1, sm: 2, md: 3 },  // responsive margins
@@ -64,7 +86,7 @@ export default function InputForm() {
 
         }}>
           <FormControl >
-            <h3>Create New Entry</h3>
+          <h3>Update</h3>
             <FormLabel id="demo-row-radio-buttons-group-label">A/c</FormLabel>
             <RadioGroup
               row
@@ -75,15 +97,17 @@ export default function InputForm() {
               <FormControlLabel value="divident" control={<Radio />} checked={account === 'divident'} label="Divident" onChange={handleAccount} />
               <FormControlLabel value="officeExpenses" control={<Radio />} checked={account === 'officeExpenses'} label="Office Expenses" onChange={handleAccount} />
               <FormControlLabel value="income" control={<Radio />} checked={account === 'income'} label="income" onChange={handleAccount} />
-              <FormControlLabel value="other" control={<Radio />} label="Other" checked={account === 'other'} onChange={handleAccount} />
+              <FormControlLabel value="other" control={<Radio />} label="Other" checked={account !== 'divident' &&  account !== 'officeExpenses' && account !== 'income'} onChange={handleAccount} />
             </RadioGroup>
           </FormControl>
         </Box>
         <TextField
-          style={{ display: account === 'other' ? 'block' : 'none' }}
+          style={{ display: account !== 'divident' &&  account !== 'officeExpenses' && account !== 'income' ? 'block' : 'none' }}
           id="account"
-          label="A/c"
+          // label="A/c"
+          placeholder='A/c'
           type='text'
+          value={account1}
           onChange={(e) => { setAccount1(e.target.value) }}
         />
 
@@ -96,15 +120,15 @@ export default function InputForm() {
           onChange={(e) => { setName(e.target.value) }}
         >
           <MenuItem value="amit">Amit</MenuItem>
-          {/* <MenuItem value="rupesh">Rupesh</MenuItem> */}
         </TextField>
 
         <TextField
           required
-          label="Description"
+          // label="Description"
+          placeholder='Description'
           type='text'
           multiline
-          rows={2}
+          rows={4}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
@@ -126,12 +150,13 @@ export default function InputForm() {
           id="outlined-number"
           required
           type="number"
-          label="Rs"
+          // label="Rs"
+          placeholder='Money'
           variant="outlined"
           value={money}
           onChange={(e) => setMoney(e.target.value)}
         />
-        <Button variant="outlined" onClick={HandleSubmit}>Submit</Button>
+        <Button variant="outlined" onClick={HandleSubmit}>Update</Button>
       </div>
     </Box>
   );

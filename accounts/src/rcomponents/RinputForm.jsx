@@ -3,17 +3,17 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
-import "./InputForm.css"
+import "./RinputForm.css"
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { useDispatch, useSelector } from 'react-redux';
-import { createNewData } from '../redux/newDataActions';
+import { createNewData } from '../redux/rDataActions';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-export default function InputForm() {
+export default function RinputForm() {
   const [account, setAccount] = React.useState("");
   const [account1, setAccount1] = React.useState("");
   const [name, setName] = React.useState("");
@@ -22,7 +22,7 @@ export default function InputForm() {
   const [mode, setMode] = React.useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const {success} = useSelector((state)=>state.newData)
+  const {success} = useSelector((state)=>state.rnewData)
   const handleAccount = (e) => {
     setAccount(e.target.value)
   }
@@ -45,7 +45,7 @@ export default function InputForm() {
   useEffect(()=>{
     if(success){
       alert("Data Added Succesfully");
-      navigate("/show/mendhepathar")
+      navigate("/show/raulgaon")
     }
   },[navigate, success])
   return (

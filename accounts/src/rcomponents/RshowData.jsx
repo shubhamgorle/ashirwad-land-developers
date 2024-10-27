@@ -1,14 +1,14 @@
 import React,{Fragment, useState} from 'react';
-import "./showData.css"
+import "./RshowData.css"
 import { useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { getAllData } from '../redux/newDataActions'
+import { getAllData } from '../redux/rDataActions'
 import { DataGrid } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import { Button } from '@mui/material';
-import { deleteData } from '../redux/newDataActions'
-import { DELETE_DATA_RESET } from '../redux/newDataActionTypes'
+import { deleteData } from '../redux/rDataActions'
+import { R_DELETE_DATA_RESET } from '../redux/rDataActionTypes'
 import DeleteIcon from "@mui/icons-material/Delete"
 import EditIcon from "@mui/icons-material/Edit"
 import Dialog from '@mui/material/Dialog';
@@ -18,13 +18,14 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 const ShowData = () => {
     const dispatch = useDispatch();
-    const {AllData} = useSelector((state)=>state.getAllData);
-    const {isDeleted} = useSelector((state)=>state.deleteData);
+    const {AllData} = useSelector((state)=>state.rgetAllData);
+    const {isDeleted} = useSelector((state)=>state.rdeleteData);
     const [id, setId] = useState()
     const [open, setOpen] = React.useState(false);
-
+    // const idref = useRef(null)
   const handleClickOpen = (id) => {
     setId(id)
+    // idref.current.value = id
     setOpen(true);
   };
 
@@ -74,7 +75,7 @@ const ShowData = () => {
           if(params.row.id !== 'total'){
             return(
               <>
-              <Link to={`/update/mendhepathar/${params.row.id}`}><EditIcon/></Link>
+              <Link to={`/update/raulgaon/${params.row.id}`}><EditIcon/></Link>
               <Button onClick={()=>handleClickOpen(params.row.id)}><DeleteIcon/></Button>
               {/* <Button onClick={()=>handleDelete(params.row.id)}><DeleteIcon/></Button> */}
               </>
@@ -121,7 +122,7 @@ const ShowData = () => {
     useEffect(()=>{
       if(isDeleted){
         alert("Data Deleted Successfully")
-        dispatch({type:DELETE_DATA_RESET})
+        dispatch({type:R_DELETE_DATA_RESET})
       }
          dispatch(getAllData())
     },[dispatch, isDeleted])
