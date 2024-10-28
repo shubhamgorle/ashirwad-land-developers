@@ -1,7 +1,7 @@
-const NewData = require("../models/newDataModel");
+const Rdata = require("../models/raulgaonModel");
 
 exports.createData = async(req, res, next)=>{
-    const data = await NewData.create(req.body);
+    const data = await Rdata.create(req.body);
     res.status(201).json({
     success: true,
     data,
@@ -9,7 +9,7 @@ exports.createData = async(req, res, next)=>{
 }
 
 exports.getData = (async(req,res)=>{
-    const data = await NewData.find();
+    const data = await Rdata.find();
     res.status(200).json({
     success: true,
     data
@@ -18,7 +18,7 @@ exports.getData = (async(req,res)=>{
 
 
 exports.deleteData = (async(req, res)=>{
-    const data = await NewData.findByIdAndDelete(req.params.id);
+    const data = await Rdata.findByIdAndDelete(req.params.id);
     res.status(200).json({
     success: true,
     data,
@@ -27,7 +27,7 @@ exports.deleteData = (async(req, res)=>{
 })
 
 exports.updateData = (async(req, res)=>{
-    const data = await NewData.findByIdAndUpdate(req.params.id, req.body);
+    const data = await Rdata.findByIdAndUpdate(req.params.id, req.body);
     res.status(200).json({
     success: true,
     data,
@@ -35,7 +35,7 @@ exports.updateData = (async(req, res)=>{
    });
 })
 exports.getDetails = (async(req, res)=>{
-    const data = await NewData.findById(req.params.id)
+    const data = await Rdata.findById(req.params.id)
     res.status(200).json({
     success: true,
     data,
